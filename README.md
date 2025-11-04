@@ -30,6 +30,7 @@ El proyecto está compuesto por los siguientes archivos:
 - `Parser.java` → Analizador sintáctico: valida la estructura del JSON  
 - `Token.java` → Clase que representa los tokens  
 - `TokenType.java` → Enumeración de tipos de token reconocidos  
+- `fuente.txt` → Archivo de ejemplo a analizar
 
 ---
 
@@ -41,18 +42,24 @@ El proyecto está compuesto por los siguientes archivos:
 git clone https://github.com/Naidess/AnalizadorSintacticoJSON.git
 ```
 
-### 2. Compilar el Proyecto
+### 2. Mover a la carpeta 
+
+```bash
+cd .\AnalizadorSintactico\
+```
+
+### 3. Compilar el Proyecto
 
 ```bash
 javac -d . src/analizadorsintactico/*.java
 ```
 
-### 3. Ejecutar el Analizador
+### 4. Ejecutar el Analizador
 
 ```bash
-java analizadorsintactico.Main ejemplo.json
+java -cp src analizadorsintactico.AnalizadorSintactico src/fuente.txt
 ```
-- `ejemplo.json` → nombre del archivo JSON a analizar.
+- `fuente.txt` → nombre del archivo JSON de ejemplo a analizar.
 
 ---
 ## Funcionamiento Interno
