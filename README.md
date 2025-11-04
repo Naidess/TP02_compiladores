@@ -39,7 +39,7 @@ El proyecto está compuesto por los siguientes archivos:
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/Naidess/AnalizadorSintacticoJSON.git
+git clone https://github.com/Naidess/TP02_compiladores.git
 ```
 
 ### 2. Mover a la carpeta 
