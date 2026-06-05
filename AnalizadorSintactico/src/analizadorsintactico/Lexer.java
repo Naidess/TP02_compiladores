@@ -110,7 +110,7 @@ public class Lexer {
         };
     }
 
-    private int printTokens(List<Token> tokens, int level) {
+    public int printTokens(List<Token> tokens, int level) {
         StringBuilder output = new StringBuilder();
         boolean nuevaLinea = true;
 
@@ -118,6 +118,10 @@ public class Lexer {
             Token token = tokens.get(i);
 
             switch (token.getType()) {
+                //el token EOF no forma parte de la salida lexica
+                case EOF -> {
+                }
+
                 case LITERAL_CADENA -> {
                     if (nuevaLinea) output.append("\t".repeat(level));
                     output.append("STRING");

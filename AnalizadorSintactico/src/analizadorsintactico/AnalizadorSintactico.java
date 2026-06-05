@@ -14,6 +14,13 @@ public class AnalizadorSintactico {
             Lexer lexer = new Lexer(filePath);
             List<Token> tokens = lexer.tokenizeFile();
 
+            //fase 1: analisis lexico - muestra los tokens reconocidos
+            System.out.println("=== Análisis Léxico ===");
+            lexer.printTokens(tokens, 0);
+            System.out.println();
+
+            //fase 2: analisis sintactico - valida la estructura
+            System.out.println("=== Análisis Sintáctico ===");
             Parser parser = new Parser(tokens);
             parser.parse();
 
