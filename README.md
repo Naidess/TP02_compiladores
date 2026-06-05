@@ -5,6 +5,12 @@ El programa verifica si la estructura del archivo es sintácticamente válida se
 
 ---
 
+## Responsables
+- Raul Fernando Servian Cespedes 
+- Alejandro Daniel Vera Escobar 
+
+---
+
 ## Tecnologías Utilizadas
 
 - **Lenguaje:** Java  
