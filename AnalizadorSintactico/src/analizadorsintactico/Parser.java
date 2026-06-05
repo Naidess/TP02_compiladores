@@ -90,13 +90,7 @@ public class Parser {
         element();
         while (current.getType() == TokenType.COMA) {
             match(TokenType.COMA);
-            if (current.getType() != TokenType.L_LLAVE && current.getType() != TokenType.L_CORCHETE) {
-                error("Se esperaba inicio de elemento después de ',' en element-list");
-                synchronize(Set.of(TokenType.COMA, TokenType.R_CORCHETE, TokenType.R_LLAVE, TokenType.EOF));
-                if (current.getType() == TokenType.R_CORCHETE) return;
-            } else {
-                element();
-            }
+            element();
         }
     }
 

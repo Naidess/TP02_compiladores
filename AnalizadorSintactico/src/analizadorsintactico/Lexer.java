@@ -129,61 +129,169 @@ public class Lexer {
 
                         if (i + 1 < tokens.size()) {
                             Token valor = tokens.get(i + 1);
-                            switch (valor.getType()) {
-                                case LITERAL_CADENA -> output.append("STRING");
-                                case LITERAL_NUM -> output.append("NUMBER");
-                                case PR_TRUE -> output.append("PR_TRUE");
-                                case PR_FALSE -> output.append("PR_FALSE");
-                                case PR_NULL -> output.append("PR_NULL");
-                                case L_LLAVE, L_CORCHETE -> {
-                                    output.append(valor.getType().name());
-                                    level++;
-                                    nuevaLinea = true;
+                            boolean esEstructuraCompleja = false;
 
-                                    // Array vacío [ ]
-                                    if (valor.getType() == TokenType.L_CORCHETE &&
-                                        i + 2 < tokens.size() &&
-                                        tokens.get(i + 2).getType() == TokenType.R_CORCHETE) {
-                                        output.append("\t".repeat(level)).append("\n");
+                            switch (valor.getType()) {
+                                case LITERAL_CADENA -> {
+                                    output.append("STRING");
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
+                                case LITERAL_NUM -> {
+                                    output.append("NUMBER");
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
+                                case PR_TRUE -> {
+                                    output.append("PR_TRUE");
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
+                                case PR_FALSE -> {
+                                    output.append("PR_FALSE");
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
+                                case PR_NULL -> {
+                                    output.append("PR_NULL");
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
+                                case L_LLAVE -> {
+                                    output.append("L_LLAVE\n");
+                                    level++;
+                                    esEstructuraCompleja = true;
+                                    i++;
+                                }
+                                case L_CORCHETE -> {
+                                    if (i + 2 < tokens.size() && tokens.get(i + 2).getType() == TokenType.R_CORCHETE) {
+                                        output.append("L_CORCHETE R_CORCHETE");
+                                        i += 2;
+                                        esEstructuraCompleja = true;
+                                    } else {
+                                        output.append("L_CORCHETE\n");
+                                        level++;
+                                        esEstructuraCompleja = true;
+                                        i++;
                                     }
                                 }
-                                default -> output.append(valor.getType().name());
+                                default -> {
+                                    output.append(valor.getType().name());
+                                    i++;
+                                    esEstructuraCompleja = false;
+                                }
                             }
-                            i++;
-                        }
 
+                            if (!esEstructuraCompleja) {
+                                if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == TokenType.COMA) {
+                                    output.append(" COMA ");
+                                    i++;
+                                }
+                                output.append("\n");
+                                nuevaLinea = true;
+                            } else {
+                                nuevaLinea = true;
+                                if (valor.getType() == TokenType.L_CORCHETE
+                                        && i + 1 < tokens.size()
+                                        && tokens.get(i + 1).getType() == TokenType.COMA) {
+                                    output.append(" COMA ");
+                                    i++;
+                                    output.append("\n");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                case L_LLAVE -> {
+                    if (!nuevaLinea) {
+                        output.append("\n");
+                    }
+                    output.append("\t".repeat(level)).append("L_LLAVE\n");
+                    level++;
+                    nuevaLinea = true;
+                }
+
+                case L_CORCHETE -> {
+                    if (!nuevaLinea) {
+                        output.append("\n");
+                    }
+                    output.append("\t".repeat(level)).append("L_CORCHETE");
+                    if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == TokenType.R_CORCHETE) {
+                        output.append(" R_CORCHETE");
+                        i++;
                         if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == TokenType.COMA) {
-                            output.append(" COMA");
+                            output.append(" COMA ");
                             i++;
                         }
                         output.append("\n");
                         nuevaLinea = true;
+                    } else {
+                        output.append("\n");
+                        level++;
+                        nuevaLinea = true;
                     }
                 }
 
-                case L_LLAVE, L_CORCHETE -> {
-                    if (!nuevaLinea) output.append("\n");
-                    output.append("\t".repeat(level)).append(token.getType().name()).append("\n");
-                    level++;
-                    nuevaLinea = true;
-
-                    if (token.getType() == TokenType.L_CORCHETE &&
-                        i + 1 < tokens.size() &&
-                        tokens.get(i + 1).getType() == TokenType.R_CORCHETE) {
-                        output.append("\t".repeat(level)).append("\n");
-                    }
-                }
-
-                case R_LLAVE, R_CORCHETE -> {
+                case R_LLAVE -> {
                     level--;
-                    if (!nuevaLinea) output.append("\n");
-                    output.append("\t".repeat(level)).append(token.getType().name());
+                    output.append("\n");
+                    output.append("\t".repeat(level)).append("R_LLAVE");
                     if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == TokenType.COMA) {
-                        output.append(" COMA");
+                        output.append(" COMA ");
                         i++;
                     }
                     output.append("\n");
                     nuevaLinea = true;
+                }
+
+                case R_CORCHETE -> {
+                    level--;
+                    output.append("\n");
+                    output.append("\t".repeat(level)).append("R_CORCHETE");
+                    if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == TokenType.COMA) {
+                        output.append(" COMA ");
+                        i++;
+                    }
+                    output.append("\n");
+                    nuevaLinea = true;
+                }
+
+                case COMA -> {
+                    output.append(" COMA ");
+                    nuevaLinea = false;
+                }
+
+                case LITERAL_NUM -> {
+                    if (nuevaLinea) {
+                        output.append("\t".repeat(level));
+                    }
+                    output.append("NUMBER");
+                    nuevaLinea = false;
+                }
+
+                case PR_TRUE -> {
+                    if (nuevaLinea) {
+                        output.append("\t".repeat(level));
+                    }
+                    output.append("PR_TRUE");
+                    nuevaLinea = false;
+                }
+
+                case PR_FALSE -> {
+                    if (nuevaLinea) {
+                        output.append("\t".repeat(level));
+                    }
+                    output.append("PR_FALSE");
+                    nuevaLinea = false;
+                }
+
+                case PR_NULL -> {
+                    if (nuevaLinea) {
+                        output.append("\t".repeat(level));
+                    }
+                    output.append("PR_NULL");
+                    nuevaLinea = false;
                 }
 
                 default -> {
